@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@radix-ui/react-avatar": "^1.1.10",
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-toast": "^1.2.14",
+    "class-variance-authority": "^0.7.1",
+    "lucide-react": "^0.526.0",
+    "socket.io-client": "^4.8.1"
+  }
+}
