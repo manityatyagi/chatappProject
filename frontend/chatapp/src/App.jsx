@@ -1,35 +1,85 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useEffect } from 'react';
+import { Provider } from 'react-redux';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { store } from './store';
+import LoginPage from './components/login.jsx';
+import ChatLayout from './components/ChatLayout';
+import { Toaster } from './components/ui/toaster';
+import { useAppDispatch, useAppSelector } from './hooks/redux';
+import { setLoading } from './store/slices/authSlice.js';
+import "./index.css";
+import "./App.css";
+import api from './api/axios.js';
 
-function App() {
-  const [count, setCount] = useState(0)
+const API_BASE = import.meta.env.VITE_API_URL;
+
+function AppContent() {
+  const dispatch = useAppDispatch();
+  const { isAuthenticated, isLoading } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        await api.get('/');
+      } catch (error) {
+        // Handle error silently for demo
+      } finally {
+        dispatch(setLoading(false));
+      }
+    };
+
+    initializeApp();
+  }, [dispatch]);
+
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-secondary-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-secondary-600">Loading ChatHive...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="App">
+      <BrowserRouter>
+        <Routes>
+          <Route 
+            path="/" 
+            element={
+              isAuthenticated ? (
+                <Navigate to="/chat" replace />
+              ) : (
+                <LoginPage />
+              )
+            } 
+          />
+          <Route 
+            path="/chat" 
+            element={
+              isAuthenticated ? (
+                <ChatLayout />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            } 
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+      <Toaster />
+    </div>
+  );
 }
 
-export default App
+function App() {
+  return (
+    <Provider store={store}>
+      <AppContent />
+    </Provider>
+  );
+}
+
+export default App;

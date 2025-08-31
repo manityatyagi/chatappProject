@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "@langchain/core": "^0.3.66",
+    "@langchain/openai": "^0.6.3",
+    "cloudinary": "^1.41.3",
+    "jsonwebtoken": "^9.0.2",
+    "langchain": "^0.3.30",
+    "multer": "^2.0.2",
+    "multer-storage-cloudinary": "^4.0.0",
+    "nodemon": "^3.1.10"
+  }
+}
